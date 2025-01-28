@@ -1,0 +1,71 @@
+package com.project.login.adapter;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Component;
+
+import com.project.login.model.Book;
+import com.project.login.model.Reservation;
+import com.project.login.model.User;
+import com.project.login.port.ReservationDataPort;
+import com.project.login.repository.BookRepository;
+import com.project.login.repository.ReservationRepository;
+import com.project.login.repository.UserRepository;
+
+@Component
+public class ReservationRepositoryAdapter implements ReservationDataPort{
+	private final UserRepository userRepository;
+    private final BookRepository bookRepository;
+    private final ReservationRepository reservationRepository;
+    public ReservationRepositoryAdapter(UserRepository userRepository, BookRepository bookRepository, ReservationRepository reservationRepository) {
+        this.userRepository = userRepository;
+        this.bookRepository = bookRepository;
+        this.reservationRepository = reservationRepository;
+    }
+    @Override
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("Kullanıcı bulunamadı"));
+    }
+    @Override
+    public Book getBookById(Long bookId) {
+        return bookRepository.findById(bookId)
+                .orElseThrow(() -> new IllegalStateException("Kitap bulunamadı"));
+    }
+    @Override
+    public Reservation findById(Long reservationId) {
+    	return reservationRepository.findById(reservationId)
+                .orElseThrow(() -> new IllegalStateException("Rezervasyon bulunamadı"));
+    }
+    @Override
+    public Reservation saveReservation(Reservation reservation) {
+        return reservationRepository.save(reservation);
+    }
+    
+    @Override
+    public List<Reservation> findAllReservations() {
+        return reservationRepository.findAll();
+    }
+	@Override
+	public void deleteReservation(Reservation reservation) {
+		reservationRepository.delete(reservation);
+	}
+	@Override
+	public Long countByStatus(String status) {
+		return reservationRepository.countByStatus(status);
+	}
+	@Override
+	public void saveBook(Book book) {
+		 bookRepository.save(book); //stock güncelliyor
+	}
+	@Override
+	public Optional<Reservation> findActiveReservationByUserAndBook(Long userId, Long bookId) {
+		return reservationRepository.findByUserIdAndBookIdAndStatusNot(userId, bookId, "RETURNED");
+	}
+	@Override
+	public List<Reservation> findReservationsByUser(Long userId) {
+		return reservationRepository.findByUserId(userId);
+	}
+    
+}

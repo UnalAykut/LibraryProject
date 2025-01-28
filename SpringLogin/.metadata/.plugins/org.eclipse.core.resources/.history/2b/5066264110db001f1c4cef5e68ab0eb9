@@ -1,0 +1,59 @@
+package com.project.login.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.login.dto.BookAdminDto;
+import com.project.login.service.BookService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@RestController
+@RequestMapping("admin/books")
+@PreAuthorize("hasRole('ADMIN')")
+@SecurityRequirement(name = "bearerAuth") 
+public class AdminBookController {
+	@Autowired
+    private BookService bookService;
+	
+	@GetMapping("/getAll")
+	public ResponseEntity<List<BookAdminDto>> getAllBookForAdmin(){
+		 return ResponseEntity.ok(bookService.getAllBooksForAdmin());
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<BookAdminDto> getBookByIdForAdmin(@PathVariable Long id){
+			BookAdminDto book=bookService.getBookByIdForAdmin(id);
+			return ResponseEntity.ok(book);
+	}
+	
+	@PostMapping 
+	public ResponseEntity<BookAdminDto> addBook(@RequestBody BookAdminDto bookAdminDto){
+		return ResponseEntity.ok(bookService.saveBook(bookAdminDto));
+	}
+	
+	@PutMapping("/{id}")
+	public ResponseEntity<BookAdminDto> updateBook(@PathVariable Long id , @RequestBody BookAdminDto bookAdminDto ){
+		return ResponseEntity.ok(bookService.updateBook(id, bookAdminDto));
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<BookAdminDto> deleteBook(@PathVariable Long id){
+		 bookService.deleteBook(id);
+	     return ResponseEntity.noContent().build();
+	}
+	
+	
+	
+}

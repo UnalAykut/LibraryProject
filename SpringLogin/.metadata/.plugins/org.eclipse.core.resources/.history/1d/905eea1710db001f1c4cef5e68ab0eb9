@@ -1,0 +1,36 @@
+package com.project.login.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.project.login.dto.UpdateUserRequestDto;
+import com.project.login.dto.UserDto;
+import com.project.login.service.UserService;
+
+
+
+@Controller
+@RequestMapping("api")
+public class UserController {
+	private UserService userService;
+	
+	
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
+
+
+	@PutMapping("/profile") // Kullanıcı kendi profilini güncellemek için
+	public ResponseEntity<UserDto> updateUserProfile(
+	        @RequestBody UpdateUserRequestDto updateUserRequestDto) {
+	    // Şu an oturum açmış olan kullanıcının ID'sini alıyoruz
+	    Long currentUserId = userService.getCurrentUserId();
+
+	    // Kullanıcının kendi profilini güncellemesini sağlıyoruz
+	    UserDto updatedUser = userService.updateUserProfile(currentUserId, updateUserRequestDto);
+	    return ResponseEntity.ok(updatedUser);
+	}
+}

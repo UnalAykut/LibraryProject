@@ -1,0 +1,104 @@
+package com.project.login.service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.project.login.dto.RegisterRequest;
+import com.project.login.dto.UserDto;
+import com.project.login.model.Role;
+import com.project.login.model.User;
+import com.project.login.repository.UserRepository;
+
+
+@Service
+public class UserService {
+	
+	private UserRepository userRepository;
+	
+	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	 public UserService(UserRepository userRepository,@Lazy PasswordEncoder passwordEncoder) {
+		this.userRepository = userRepository;
+	    this.passwordEncoder = passwordEncoder;
+	    
+	    }
+	
+	public void saveUser(RegisterRequest  registerRequest) {
+		 User user = new User();
+		if (userRepository.FindByUsername(registerRequest.getUsername()).isPresent()) {
+            throw new IllegalArgumentException("Bu kullanıcı adı zaten alınmış.");
+        }
+		if(userRepository.FindByEmail(registerRequest.getEmail()).isPresent()) {
+			throw new IllegalArgumentException("Bu email zaten kullanılmış.");
+		}
+		String encodedPassword = passwordEncoder.encode(registerRequest.getPassword());
+		user.setPassword(encodedPassword);
+		user.setEmail(registerRequest.getEmail());
+		user.setUsername(registerRequest.getUsername());
+		user.setRole(Role.USER);
+		userRepository.save(user);
+	}
+	
+	// Kullanıcı doğrulama
+    public boolean authenticateUser(String username, String password) {
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+        if (optionalUser.isPresent()) {
+        	User user = optionalUser.get();
+        	// Şifre kontrolü
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                // Kullanıcı admin mi?
+                return user.getRole() == Role.USER;
+            }
+        }
+        return false;
+    }
+
+    public Role getUserRole(String username) {
+        // Kullanıcıyı veri tabanından al
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+
+        // Kullanıcıyı kontrol et ve rolünü döndür
+        return optionalUser
+                .map(User::getRole) // Eğer kullanıcı varsa rolünü döndür
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username)); // Kullanıcı bulunamazsa hata fırlat
+    }
+
+	public Long getTotalMembers() {
+		// TODO Auto-generated method stub
+		return userRepository.count();
+	}
+	public List<UserDto> getAllUsers() {
+        List<User> users = userRepository.findAll();
+     // Yalnızca rolü "USER" olan kullanıcıları filtrele
+        List<User> filteredUsers = users.stream()
+                .filter(user -> "USER".equals(user.getRole())) // Burada filtreleme yapılıyor
+                .collect(Collectors.toList());
+        
+        return filteredUsers.stream()
+                .map(user -> new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getRole()))
+                .collect(Collectors.toList());
+    }
+	
+	public UserDto getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + id));
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getRole());
+    }
+
+    public void deleteUserById(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new UsernameNotFoundException("Kullanıcı bulunamadı: " + id);
+        }
+        userRepository.deleteById(id);
+    }
+	
+
+}

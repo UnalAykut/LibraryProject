@@ -1,0 +1,37 @@
+package com.project.login.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.login.dto.UpdateUserRequestDto;
+import com.project.login.dto.UserDto;
+import com.project.login.service.UserService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+@RestController
+@RequestMapping
+@SecurityRequirement(name = "bearerAuth") 
+public class UserController {
+	private UserService userService;
+	
+	
+	public UserController(UserService userService) {
+		this.userService = userService;
+	}
+
+
+	@PutMapping("/profile") // Kullanıcı kendi profilini güncellemek için
+	public ResponseEntity<UserDto> updateUserProfile(
+	        @RequestBody UpdateUserRequestDto updateUserRequestDto) {
+	    // Şu an oturum açmış olan kullanıcının ID'sini alıyoruz
+	    Long currentUserId = userService.getCurrentUserId();
+
+	    // Kullanıcının kendi profilini güncellemesini sağlıyoruz
+	    UserDto updatedUser = userService.updateUserProfile(currentUserId, updateUserRequestDto);
+	    return ResponseEntity.ok(updatedUser);
+	}
+}

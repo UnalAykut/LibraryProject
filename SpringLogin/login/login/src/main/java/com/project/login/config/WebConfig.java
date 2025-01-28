@@ -1,0 +1,20 @@
+package com.project.login.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+@Configuration
+public class WebConfig implements WebMvcConfigurer{
+ @Override
+ public void addCorsMappings(CorsRegistry registry) {
+	 registry.addMapping("/**")
+     .allowedOrigins("http://localhost:3000") // React frontend'inizin URL'si
+     .allowedMethods("GET", "POST", "PUT", "DELETE" ,"OPTIONS")
+	 .allowedHeaders("*")// Tüm başlıklara izin ver
+	 .allowCredentials(true) // Yetkilendirme bilgilerini dahil et
+	 .exposedHeaders("Authorization") // Header'da yetki bilgisi varsa buna da izin ver
+     .allowCredentials(true); // Tarayıcı, kimlik bilgilerini dahil edebilir
+	 
+ }
+	
+}

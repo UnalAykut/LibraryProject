@@ -1,0 +1,106 @@
+package com.project.login.security;  // security paketi altında yer alır
+
+import java.security.Key;
+import java.util.Base64;
+import java.util.Date;
+
+import javax.crypto.spec.SecretKeySpec;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import com.project.login.model.Role;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
+
+@Component  // Spring tarafından yönetilecek bir bileşen olduğunu belirtir
+public class JwtTokenProvider {
+
+    @Value("${jwt.secret}")  // application.properties dosyasından secret key'i alır
+    private String secretKey;
+
+    @Value("${jwt.expiration}")  // application.properties dosyasından token süresini alır
+    private long validityInMilliseconds;
+    
+     //signWith(SignatureAlgorithm.HS256, secretKey)Bu metot artık önerilmiyor.
+    // Bunun yerine, daha güvenli bir şekilde çalışması için bir Key nesnesi kullanılması gerekiyor.
+    private Key getSigningKey() {
+        byte[] secretKeyBytes = Base64.getDecoder().decode(secretKey); // Secret key'i Base64 ile çöz
+        return new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS256.getJcaName()); // Secret key'i Key nesnesine dönüştür
+    }
+    
+    
+    // Kullanıcı adı ile bir JWT token oluşturur
+    public String createToken(String username,Role role,Long userId) {
+        Claims claims = Jwts.claims().setSubject(username);
+        claims.put("userId", userId); // Kullanıcı ID'sini token'a ekle
+        claims.put("role", role.name()); // Rolü token'a ekle// Token'ın claim kısmına kullanıcı adını ekler
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + validityInMilliseconds);  // Token'ın geçerlilik süresini belirler
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setIssuedAt(now)
+                .setExpiration(validity)
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)  // HS256 algoritması ile imzalar
+                .compact();
+    }
+    
+    
+    private JwtParser getJwtParser() {
+        return Jwts.parserBuilder()                  // Yeni bir JwtParserBuilder nesnesi oluşturur
+                .setSigningKey(getSigningKey())      // JWT'nin imzasını doğrulamak için kullanılacak imza anahtarını (key) ayarlar
+                .build();                            // Parser'ı oluşturur ve geri döner
+    }
+
+    // Token'ın geçerliliğini kontrol eder
+    public boolean validateToken(String token) {
+    	try {
+            getJwtParser().parseClaimsJws(token); // Token'ı doğrula
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
+ // Token'dan kullanıcı idsini alır
+    public Long getUserIdFromToken(String token) {
+        return getJwtParser()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("userId", Long.class); // Token'dan "userId" alanını al
+    }
+
+    // Token'dan kullanıcı adını alır
+    public String getUsernameFromToken(String token) {
+    	 return getJwtParser().parseClaimsJws(token).getBody().getSubject();
+    }
+    
+ // Token'dan rol bilgisi alır
+    public Role getRoleFromToken(String token) {
+        String role = getJwtParser()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("role", String.class); // Token'dan "role" alanını al
+        return Role.valueOf(role); // Role enum'una dönüştür
+    }
+    
+ // Kullanıcının admin olup olmadığını kontrol eder
+    public boolean isAdmin(String token) {
+        return getRoleFromToken(token) == Role.ADMIN;
+    }
+
+
+    // İstekten JWT token'ı alır
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");  // Authorization başlığını alır
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);  // "Bearer " kısmını çıkararak token'ı döndürür
+        }
+        return null;
+    }
+}

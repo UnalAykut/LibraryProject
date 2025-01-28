@@ -1,0 +1,66 @@
+package com.project.login.controller;
+
+import java.security.Principal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.project.login.dto.AdminProfileResponseDto;
+import com.project.login.dto.AuthResponse;
+import com.project.login.dto.LoginRequest;
+import com.project.login.model.Role;
+import com.project.login.security.JwtTokenProvider;
+import com.project.login.service.AdminService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Controller
+@RequestMapping("/admin") 
+@Tag(name = "Auth Controller", description = "Admin kimlik doğrulama işlemleri")
+public class AdminAuthController {
+
+    @Autowired
+    private AdminService adminService;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+
+    // Admin Giriş İşlemi
+    @PostMapping("/login")
+    @Operation(summary = "Admin Giriş", description = "Admin kullanıcı giriş işlemi")
+    public ResponseEntity<?> adminLogin(@RequestBody LoginRequest loginRequest) {
+        // Kullanıcı adı ve şifre ile doğrulama yapılacak
+        if (adminService.authenticateAdmin(loginRequest.getUsername(), loginRequest.getPassword())) {
+        	 Role adminRole = adminService.getUserRole(loginRequest.getUsername());
+        	// Kullanıcı ID'sini al
+             Long userId = adminService.getUserIdByUsername(loginRequest.getUsername());
+            String token = jwtTokenProvider.createToken(loginRequest.getUsername(),userId, adminRole);
+            // Token başarıyla oluşturuldu
+            return ResponseEntity.ok(new AuthResponse(token));
+        } else {
+            // Geçersiz giriş bilgileri
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Geçersiz kullanıcı adı veya şifre!");
+        }
+    }
+    
+    @GetMapping("/profile")
+    @Operation(summary = "Admin Profili", description = "Admin profil bilgi işlemi")
+    public ResponseEntity<?> getAdminProfile(Principal principal) {
+        // Principal'dan giriş yapan kullanıcının bilgilerini alın
+        String adminUsername = principal.getName();
+        
+        // AdminService'den admin bilgilerini alın
+        AdminProfileResponseDto adminProfile = adminService.getAdminProfile(adminUsername);
+        
+        return ResponseEntity.ok(adminProfile);
+    }
+    
+}

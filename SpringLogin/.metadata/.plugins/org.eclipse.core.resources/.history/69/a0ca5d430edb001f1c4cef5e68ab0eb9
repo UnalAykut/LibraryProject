@@ -1,0 +1,5 @@
+package com.project.login.dto;
+
+public class UpdateUserByAdminDto {
+
+}

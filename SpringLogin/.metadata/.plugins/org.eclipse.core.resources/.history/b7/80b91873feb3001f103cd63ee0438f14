@@ -1,0 +1,24 @@
+package com.project.login.JpaTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+
+import com.project.login.model.User;
+import com.project.login.repository.UserRepository;
+
+@DataJpaTest
+public class UserRepositoryTest {
+	
+	private UserRepository userRepository;
+	
+	@Test
+	public void shouldSaveUserSuccessfully() {
+		User user = new User(999L,"testuser", "testuser@example.com", "password123");
+		User savedUser = userRepository.save(user);
+		assertNotNull(savedUser.getId());
+        assertEquals("testuser", savedUser.getUsername());
+	}
+}

@@ -1,0 +1,160 @@
+package com.project.login.service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.project.login.dto.BookAdminDto;
+import com.project.login.dto.BookUserDto;
+import com.project.login.model.Book;
+import com.project.login.repository.BookRepository;
+
+@Service
+public class BookService {
+	
+	@Autowired
+	private BookRepository bookRepository;
+	
+	 // Tüm kitapları listeleme Kullanıcılar için
+    public List<BookUserDto> getAllBooksForUsers() {
+        return bookRepository.findAll().stream()
+        		.map(book -> new BookUserDto(
+        				book.getTitle(),
+        				book.getAuthor(),
+        				book.getDescription(),
+        				book.getImageUrl(),
+        				book.getDescription()
+        				)).collect(Collectors.toList());
+    }
+    
+ // Tüm kitapları listeleme Admin için
+    public List<BookAdminDto> getAllBooksForAdmin() {
+        return bookRepository.findAll().stream()
+        		.map(book -> new BookAdminDto(
+        				book.getId(),
+                        book.getTitle(),
+                        book.getAuthor(),
+                        book.getGenre(),
+                        book.getDescription(),
+                        book.getStock(),
+                        book.getImageUrl()
+        				)).collect(Collectors.toList());
+    }
+    
+ // ID'ye göre kitap getirme (Admin için)
+    public BookAdminDto getBookByIdForAdmin(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Kitap bulunamadı: " + id));
+        return new BookAdminDto(
+                book.getId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getGenre(),
+                book.getDescription(),
+                book.getStock(),
+                book.getImageUrl()
+        );
+    }
+    
+ // Yeni kitap ekleme (Admin için)
+    public BookAdminDto saveBook(BookAdminDto bookAdminDto) {
+        Book book = new Book();
+        book.setTitle(bookAdminDto.getTitle());
+        book.setAuthor(bookAdminDto.getAuthor());
+        book.setGenre(bookAdminDto.getGenre());
+        book.setDescription(bookAdminDto.getDescription());
+        book.setStock(bookAdminDto.getStock());
+        book.setImageUrl(bookAdminDto.getImageUrl());
+
+        Book savedBook = bookRepository.save(book);
+        return new BookAdminDto(
+                savedBook.getId(),
+                savedBook.getTitle(),
+                savedBook.getAuthor(),
+                savedBook.getGenre(),
+                savedBook.getDescription(),
+                savedBook.getStock(),
+                savedBook.getImageUrl()
+        );
+        
+     
+    }
+    
+ // Kitap güncelleme (Admin için)
+    public BookAdminDto updateBook(Long id, BookAdminDto updatedBookDto) {
+       Book book = bookRepository.findById(id)
+       		.orElseThrow(() -> new IllegalArgumentException("Kitap bulunamadı: " + id));
+       book.setTitle(updatedBookDto.getTitle());
+       book.setAuthor(updatedBookDto.getAuthor());
+       book.setGenre(updatedBookDto.getGenre());
+       book.setDescription(updatedBookDto.getDescription());
+       book.setStock(updatedBookDto.getStock());
+       book.setImageUrl(updatedBookDto.getImageUrl());
+       
+       
+       Book updatedBook = bookRepository.save(book);
+       return new BookAdminDto(
+               updatedBook.getId(),
+               updatedBook.getTitle(),
+               updatedBook.getAuthor(),
+               updatedBook.getGenre(),
+               updatedBook.getDescription(),
+               updatedBook.getStock(),
+               updatedBook.getImageUrl()
+       );
+   }
+    
+    // Kitap silme (Admin için)
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+
+	public Long getTotalBooks() {
+		return bookRepository.count(); // JPA'nın count metodu
+	}
+/*
+	public List<ReservationResponseDto> getUserReservations(Long userId) {
+		List<Reservation> myReservations = reservationDataPort.findReservationsByUser(userId);
+		return myReservations.stream().map(reservation -> {
+	        ReservationResponseDto dto = new ReservationResponseDto();
+	        dto.setBookTitle(reservation.getBook().getTitle());
+	        dto.setReservationDate(reservation.getReservationDate());
+	        dto.setDueDate(reservation.getDueDate());
+	        dto.setExtensionCount(reservation.getExtensionCount());
+	        dto.setStatus(reservation.getStatus());
+	        
+	        LocalDate today = LocalDate.now();
+	     // Kalan gün hesaplama
+	        if (today.isBefore(reservation.getDueDate()) || today.isEqual(reservation.getDueDate())) {
+	            int daysLeft = (int) ChronoUnit.DAYS.between(today, reservation.getDueDate());
+	            dto.setDaysLeft(daysLeft);
+	            dto.setOverdueDays(0);
+	            dto.setCurrentPenalty(0.0);
+	        } else {
+	            // Geciken gün hesaplama
+	            int overdueDays = (int) ChronoUnit.DAYS.between(reservation.getDueDate(), today);
+	            double currentPenalty = overdueDays * 5.0; // Günlük ceza: 5 TL
+
+	            dto.setDaysLeft(0);
+	            dto.setOverdueDays(overdueDays);
+	            dto.setCurrentPenalty(currentPenalty);
+	        }
+	        
+	        return dto;
+	    }).collect(Collectors.toList());
+	}
+    */
+    
+    
+    
+    
+    
+    
+    
+    
+    
+}
+
+

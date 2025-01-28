@@ -1,0 +1,16 @@
+package com.project.login.dto;
+
+
+
+import com.project.login.model.Role;
+
+
+
+public class UserDto {
+		private Long id;
+		private String username;
+		private String email;
+		private String password;
+		private Role role =Role.USER;  // Varsayılan olarak USER atanır
+
+}

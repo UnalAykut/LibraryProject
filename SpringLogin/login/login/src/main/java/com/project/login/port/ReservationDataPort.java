@@ -1,0 +1,22 @@
+package com.project.login.port;
+
+import java.util.List;
+import java.util.Optional;
+
+import com.project.login.model.Book;
+import com.project.login.model.Reservation;
+import com.project.login.model.User;
+
+public interface ReservationDataPort {
+    User getUserById(Long userId);
+    Book getBookById(Long bookId);
+    Reservation findById(Long reservationId);
+    Reservation saveReservation(Reservation reservation);
+    List<Reservation> findAllReservations();
+    void deleteReservation(Reservation reservation);
+	Long countByStatus(String string);
+	void saveBook(Book book);
+	Optional<Reservation> findActiveReservationByUserAndBook(Long userId, Long bookId);
+	List<Reservation> findReservationsByUser(Long userId);
+}
+

@@ -1,0 +1,60 @@
+package com.project.login.controller;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.login.dto.BookUserDto;
+import com.project.login.dto.ReservationResponseDto;
+import com.project.login.service.BookService;
+import com.project.login.service.UserService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@RestController
+@RequestMapping
+@Tag(name = "User Book Controller", description = "Kullanıcı Kitap işlemleri")
+@SecurityRequirement(name = "bearerAuth") 
+public class UserBookController {
+	@Autowired
+    private BookService bookService;
+	@Autowired
+	private UserService userService;
+	
+
+    @GetMapping("api/user/books")
+    public ResponseEntity<List<BookUserDto>> getBooksForUsers() {
+        return ResponseEntity.ok(bookService.getAllBooksForUsers());
+    }
+    
+    @GetMapping("/admin/countBooks")
+    public Map<String, Long> getTotalBooks() {
+        Long count = bookService.getTotalBooks();
+        return Collections.singletonMap("count", count); 
+    }
+    /*
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("api/user/myReservations")
+    public ResponseEntity<List<ReservationResponseDto>> getUserReservations(@RequestParam Long userId) {
+        List<ReservationResponseDto> reservations = bookService.getUserReservations(userId);
+        return ResponseEntity.ok(reservations);
+    }*/
+    
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/admin/countUsers")
+    public Map<String, Long> getTotalMembers() {
+        Long count =userService.getTotalMembers();
+        return Collections.singletonMap("count", count);
+    }
+    
+    
+}

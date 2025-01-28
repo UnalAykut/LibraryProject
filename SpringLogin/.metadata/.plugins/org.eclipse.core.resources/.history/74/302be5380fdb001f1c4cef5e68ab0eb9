@@ -1,0 +1,99 @@
+package com.project.login.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.login.dto.AdminProfileResponseDto;
+import com.project.login.dto.UpdateUserRequestDto;
+import com.project.login.dto.UserDto;
+import com.project.login.model.Role;
+import com.project.login.model.User;
+import com.project.login.repository.UserRepository;
+
+@Service
+public class AdminService {
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public AdminService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // Admin doğrulama
+    public boolean authenticateAdmin(String username, String password) {
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            // Şifre kontrolü
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                // Kullanıcı admin mi?
+                return Role.ADMIN.equals(user.getRole());
+            }
+        }
+        return false;
+    }
+    
+    
+    // Admin rolü alma
+    public Role getUserRole(String username) {
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+
+        return optionalUser
+                .map(User::getRole)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin bulunamadı: " + username));
+    }
+    
+    public AdminProfileResponseDto getAdminProfile(String username) {
+    	// Kullanıcıyı al
+        User admin = userRepository.FindByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+        // Admin rolünü kontrol et
+        if (!Role.ADMIN.equals(admin.getRole())) {
+            throw new AccessDeniedException("Kullanıcı admin değil: " + username);
+        }
+        // DTO oluştur ve döndür
+        return new AdminProfileResponseDto(admin.getUsername());
+    }
+    @Transactional // Güncellemelerin atomik olmasını sağlar (ya hepsi yapılır ya hiçbiri yapılmaz)
+	public UserDto updateUser(Long userId, UpdateUserRequestDto updateUserRequestDto) {
+    	 User user = userRepository.findById(userId)
+    	            .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + userId));
+    	 // Gelen DTO'dan alanları kontrol edip güncelle
+    	    if (updateUserRequestDto.getUsername() != null) {
+    	        user.setUsername(updateUserRequestDto.getUsername());
+    	    }
+    	    if (updateUserRequestDto.getEmail() != null) {
+    	        user.setEmail(updateUserRequestDto.getEmail());
+    	    }
+    	    if (updateUserRequestDto.getPassword() != null) {
+    	        user.setPassword(passwordEncoder.encode(updateUserRequestDto.getPassword())); // Şifreyi encode ediyoruz
+    	    }
+    	    if (updateUserRequestDto.getRole() != null) {
+    	        try {
+    	            Role role = Role.valueOf(updateUserRequestDto.getRole().toUpperCase());
+    	            user.setRole(role);
+    	        } catch (IllegalArgumentException e) {
+    	            throw new IllegalArgumentException("Geçersiz rol: " + updateUserRequestDto.getRole());
+    	        }
+    	    }
+    	    userRepository.save(user);
+    	 // Güncellenmiş kullanıcı bilgilerini DTO'ya dönüştür ve döndür
+    	    return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+	}
+
+    
+    
+    
+}
+

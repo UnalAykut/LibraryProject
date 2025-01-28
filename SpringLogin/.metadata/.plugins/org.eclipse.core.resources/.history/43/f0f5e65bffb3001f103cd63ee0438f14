@@ -1,0 +1,50 @@
+package com.project.login.JpaTest;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import com.project.login.model.User;
+import com.project.login.repository.UserRepository;
+
+@ExtendWith(SpringExtension.class)
+@DataJpaTest
+public class UserRepositoryTest {
+	
+	private UserRepository userRepository;
+	
+	@Test
+	public void shouldSaveUserSuccessfully() {
+		User user = new User();
+		user.setUsername("test");
+		user.setPassword("test123");
+		User savedUser = userRepository.save(user);
+		// Doğrulamalar
+        assertNotNull(savedUser.getId()); // ID'nin otomatik olarak oluşturulduğunu kontrol et
+        assertEquals("testuser", savedUser.getUsername());
+        assertEquals("password123", savedUser.getPassword());
+	}
+	 @Test
+	    public void shouldNotAllowDuplicateUsernames() {
+	        // İlk kullanıcıyı oluştur ve kaydet
+	        User user1 = new User();
+	        user1.setUsername("testuser");
+	        user1.setPassword("password123");
+	        userRepository.save(user1);
+
+	        // Aynı kullanıcı adıyla ikinci kullanıcıyı oluştur
+	        User user2 = new User();
+	        user2.setUsername("testuser"); // Aynı kullanıcı adı
+	        user2.setPassword("password456");
+
+	        // Beklenen durum: `username` benzersiz olduğu için bir hata fırlatılmalı
+	        assertThrows(Exception.class, () -> {
+	            userRepository.save(user2);
+	        });
+}
+}

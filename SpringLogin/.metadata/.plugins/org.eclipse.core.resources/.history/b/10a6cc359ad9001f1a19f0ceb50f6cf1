@@ -1,0 +1,107 @@
+package com.project.login.config;
+
+
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.project.login.security.CustomHttpFirewall;
+import com.project.login.security.JwtAuthenticationFilter;
+import com.project.login.security.JwtTokenProvider;
+
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+
+	private final JwtTokenProvider jwtTokenProvider;
+	
+	public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
+        this.jwtTokenProvider = jwtTokenProvider;
+    }
+	
+	 // AuthenticationManager bean'ini oluşturur, bu kimlik doğrulama işlemleri için gereklidir
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
+
+	
+    // PasswordEncoder bean'i (BCrypt)
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();  // Şifre güvenliği için BCrypt kullanıyoruz
+    }
+    @Bean
+    public HttpFirewall customHttpFirewall() {
+        return new CustomHttpFirewall();
+    }
+    @Bean
+    public StrictHttpFirewall strictHttpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedPeriod(true);// . işaretine izin ver
+        firewall.setAllowUrlEncodedPercent(true); // Yüzde kodlamasına izin ver
+        firewall.setAllowSemicolon(true); // Noktalı virgüle izin ver
+        firewall.setAllowBackSlash(true); // Geri eğik çizgiye izin ver
+        return firewall;
+    }
+    // HTTP güvenlik yapılandırmasını yapan SecurityFilterChain bean'i
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
+            // CSRF korumasını devre dışı bırakıyoruz (genelde REST API'lerde kullanılır)
+            .csrf(csrf -> csrf.disable())
+            
+            // CORS desteğini etkinleştiriyoruz
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))// CORS yapılandırması
+            
+            // Yetkilendirme kuralları
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/admin/login").permitAll()  // Admin login için izin
+                .requestMatchers("/admin/**").hasRole("ADMIN")  // Admin endpoint'leri için izin
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/api/register", "/api/login").permitAll()  // Belirtilen endpoint'ler için izin
+                .requestMatchers("/api/user/books").hasRole("USER")
+                .anyRequest().authenticated()  // Diğer tüm istekler kimlik doğrulama gerektirir
+            )
+            
+            // Oturum yönetimi (stateless)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+            
+            // JWT tabanlı kimlik doğrulama filtresini ekleme
+            .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+            
+
+        return http.build();
+    }
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:3000");
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
+
+
+}

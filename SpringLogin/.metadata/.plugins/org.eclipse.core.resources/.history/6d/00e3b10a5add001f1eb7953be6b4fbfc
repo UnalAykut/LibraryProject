@@ -1,0 +1,220 @@
+package com.project.login.service;
+
+
+
+
+
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.project.login.dto.ReservationAdminResponseDto;
+import com.project.login.dto.ReservationRequestDto;
+import com.project.login.dto.ReservationResponseDto;
+import com.project.login.model.Book;
+import com.project.login.model.Reservation;
+import com.project.login.model.User;
+import com.project.login.port.ReservationDataPort;
+
+
+@Service
+public class ReservationService {
+	private final ReservationDataPort reservationDataPort;
+	
+	public ReservationService(ReservationDataPort reservationDataPort) {
+		this.reservationDataPort=reservationDataPort;
+	}
+	
+	//Rezervasyon yapma
+	public ReservationResponseDto reserveBook(ReservationRequestDto reservationRequestDto) {
+	    // Kullanıcıyı getir
+	    User user = reservationDataPort.getUserById(reservationRequestDto.getUserId());
+	    
+	    // Kitabı getir
+	    Book book = reservationDataPort.getBookById(reservationRequestDto.getBookId());
+		
+	    Optional<Reservation> existingReservation = reservationDataPort.findActiveReservationByUserAndBook(user.getId(),book.getId());
+	    if (existingReservation.isPresent()) {
+	        throw new RuntimeException("Bu kitabı zaten rezerve ettiniz.");
+	    }
+	    
+	    // Stok kontrolü
+	    if (book.getStock() <= 0) {
+	        throw new RuntimeException("This book is out of stock");
+	    }
+
+	    // Rezervasyon nesnesini oluştur
+	    Reservation reservation = new Reservation();
+	    reservation.setUser(user);
+	    reservation.setBook(book);
+	    reservation.setReservationDate(LocalDate.now());
+	    reservation.setDueDate(LocalDate.now().plusMonths(1));
+	    reservation.setExtensionCount(0);
+	    reservation.setPenalty(0.0);
+	    
+	    // Stoktan 1 azalt
+	    book.setStock(book.getStock() - 1);
+	    reservationDataPort.saveBook(book); // Güncellenmiş kitabı kaydet
+
+	    // Rezervasyonu kaydet
+	    Reservation savedReservation = reservationDataPort.saveReservation(reservation);
+
+	    // Yanıt DTO'su oluştur
+	    ReservationResponseDto reservationResponseDto = new ReservationResponseDto();
+	    reservationResponseDto.setBookTitle(book.getTitle());
+	    reservationResponseDto.setReservationDate(savedReservation.getReservationDate());
+	    reservationResponseDto.setDueDate(savedReservation.getDueDate());
+
+	    return reservationResponseDto;
+	}
+/*
+	// Kullanıcının rezervasyon bilgilerini görmesi
+    public ReservationResponseDto getUserReservation(Long reservationId) {
+        Reservation reservation = reservationDataPort.findById(reservationId);
+        ReservationResponseDto reservationResponseDto = new ReservationResponseDto();
+        reservationResponseDto.setBookTitle(reservation.getBook().getTitle());
+        reservationResponseDto.setReservationDate(reservation.getReservationDate());
+        reservationResponseDto.setDueDate(reservation.getDueDate());
+
+        return reservationResponseDto;
+    }
+    */
+    // Admin için detaylı rezervasyon bilgisi
+    public ReservationAdminResponseDto getAdminReservation(Long reservationId) {
+    	Reservation reservation = reservationDataPort.findById(reservationId);
+        ReservationAdminResponseDto reservationAdminResponseDto = new ReservationAdminResponseDto();
+        reservationAdminResponseDto.setReservationId(reservation.getId());
+        reservationAdminResponseDto.setUserId(reservation.getUser().getId());
+        reservationAdminResponseDto.setBookId(reservation.getBook().getId());
+        reservationAdminResponseDto.setBookTitle(reservation.getBook().getTitle());
+        reservationAdminResponseDto.setReservationDate(reservation.getReservationDate());
+        reservationAdminResponseDto.setDueDate(reservation.getDueDate());
+
+        return reservationAdminResponseDto;
+    }
+	
+    //Admin için tüm rezervasyonları getirme 
+    public List<ReservationAdminResponseDto> getAllReservationForAdmin(){
+    	List<Reservation> reservations = reservationDataPort.findAllReservations();
+    	// DTO'ya dönüştür
+        return reservations.stream().map(reservation -> {
+            ReservationAdminResponseDto dto = new ReservationAdminResponseDto();
+            dto.setReservationId(reservation.getId());
+            dto.setUserId(reservation.getUser().getId());
+            dto.setBookId(reservation.getBook().getId());
+            dto.setBookTitle(reservation.getBook().getTitle());
+            dto.setReservationDate(reservation.getReservationDate());
+            dto.setDueDate(reservation.getDueDate());
+            return dto;
+        }).collect(Collectors.toList());
+    };
+    //Admin, mevcut bir rezervasyonu güncelleyebilir.
+    public ReservationAdminResponseDto updateReservation(Long reservationId, ReservationRequestDto reservationRequestDto) {
+    	Reservation existingReservation  = reservationDataPort.findById(reservationId);
+    	// Kullanıcı ve kitap bilgilerini güncellemek istiyorsak
+    	User user = reservationDataPort.getUserById(reservationRequestDto.getUserId());
+        Book book = reservationDataPort.getBookById(reservationRequestDto.getBookId());
+    	//Rezervasyonu Güncelle
+     // Rezervasyonu güncelle
+        existingReservation.setUser(user);
+        existingReservation.setBook(book);
+        existingReservation.setDueDate(reservationRequestDto.getDueDate()); // Gelen tarihe göre güncelle
+        // Rezervasyonu kaydet
+        Reservation updatedReservation = reservationDataPort.saveReservation(existingReservation);
+        
+     // DTO'ya dönüştür
+        ReservationAdminResponseDto reservationAdminResponseDto = new ReservationAdminResponseDto();
+        reservationAdminResponseDto.setReservationId(updatedReservation.getId());
+        reservationAdminResponseDto.setUserId(updatedReservation.getUser().getId());
+        reservationAdminResponseDto.setBookId(updatedReservation.getBook().getId());
+        reservationAdminResponseDto.setBookTitle(updatedReservation.getBook().getTitle());
+        reservationAdminResponseDto.setReservationDate(updatedReservation.getReservationDate());
+        reservationAdminResponseDto.setDueDate(updatedReservation.getDueDate());
+
+        return reservationAdminResponseDto;
+    }
+  //Admin Rezervasyon oluşturma
+    public ReservationAdminResponseDto createReservation(ReservationRequestDto reservationRequestDto) {
+        User user = reservationDataPort.getUserById(reservationRequestDto.getUserId());
+        Book book = reservationDataPort.getBookById(reservationRequestDto.getBookId());
+        
+     // Stok kontrolü
+        if (book.getStock() <= 0) {
+            throw new RuntimeException("This book is out of stock");
+        }
+        // Yeni rezervasyon oluştur
+        Reservation reservation = new Reservation();
+        reservation.setUser(user);
+        reservation.setBook(book);
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setDueDate(LocalDate.now().plusMonths(1));
+        reservation.setExtensionCount(0);
+        reservation.setPenalty(0.0);
+        
+        book.setStock(book.getStock() - 1);
+        reservationDataPort.saveBook(book); // Save the updated book stock
+        // Rezervasyonu kaydet
+        Reservation savedReservation = reservationDataPort.saveReservation(reservation);
+
+        // DTO'ya dönüştür
+        ReservationAdminResponseDto responseDto = new ReservationAdminResponseDto();
+        responseDto.setReservationId(savedReservation.getId());
+        responseDto.setUserId(savedReservation.getUser().getId());
+        responseDto.setBookId(savedReservation.getBook().getId());
+        responseDto.setBookTitle(savedReservation.getBook().getTitle());
+        responseDto.setReservationDate(savedReservation.getReservationDate());
+        responseDto.setDueDate(savedReservation.getDueDate());
+
+        return responseDto;
+    }
+
+    
+   //Admin Rezervasyon silme
+    public void deleteReservation(Long reservationId) {
+        Reservation reservation = reservationDataPort.findById(reservationId);
+        reservationDataPort.deleteReservation(reservation);
+    }
+    //Ödünç alınan kitap sayısı
+    public Long getBorrowedBooksCount() {
+        return reservationDataPort.countByStatus("borrowed"); // JPA'da özel sorgu
+    }
+
+    public List<ReservationResponseDto> getUserReservations(Long userId) {
+		List<Reservation> myReservations = reservationDataPort.findReservationsByUser(userId);
+		return myReservations.stream().map(reservation -> {
+	        ReservationResponseDto dto = new ReservationResponseDto();
+	        dto.setBookTitle(reservation.getBook().getTitle());
+	        dto.setReservationDate(reservation.getReservationDate());
+	        dto.setDueDate(reservation.getDueDate());
+	        dto.setExtensionCount(reservation.getExtensionCount());
+	        dto.setStatus(reservation.getStatus());
+	        
+	        LocalDate today = LocalDate.now();
+	     // Kalan gün hesaplama
+	        if (today.isBefore(reservation.getDueDate()) || today.isEqual(reservation.getDueDate())) {
+	            int daysLeft = (int) ChronoUnit.DAYS.between(today, reservation.getDueDate());
+	            dto.setDaysLeft(daysLeft);
+	            dto.setOverdueDays(0);
+	            dto.setCurrentPenalty(0.0);
+	        } else {
+	            // Geciken gün hesaplama
+	            int overdueDays = (int) ChronoUnit.DAYS.between(reservation.getDueDate(), today);
+	            double currentPenalty = overdueDays * 5.0; // Günlük ceza: 5 TL
+
+	            dto.setDaysLeft(0);
+	            dto.setOverdueDays(overdueDays);
+	            dto.setCurrentPenalty(currentPenalty);
+	        }
+	        
+	        return dto;
+	    }).collect(Collectors.toList());
+	}
+    
+	
+	
+	
+}

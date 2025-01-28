@@ -1,0 +1,105 @@
+package com.project.login.service;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.project.login.dto.AdminProfileResponseDto;
+import com.project.login.dto.UpdateUserByAdminDto;
+import com.project.login.dto.UserDto;
+import com.project.login.model.Role;
+import com.project.login.model.User;
+import com.project.login.repository.UserRepository;
+
+@Service
+public class AdminService {
+
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public AdminService(UserRepository userRepository, @Lazy PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // Admin doğrulama
+    public boolean authenticateAdmin(String username, String password) {
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
+            // Şifre kontrolü
+            if (passwordEncoder.matches(password, user.getPassword())) {
+                // Kullanıcı admin mi?
+                return Role.ADMIN.equals(user.getRole());
+            }
+        }
+        return false;
+    }
+    
+    
+    // Admin rolü alma
+    public Role getUserRole(String username) {
+        Optional<User> optionalUser = userRepository.FindByUsername(username);
+
+        return optionalUser
+                .map(User::getRole)
+                .orElseThrow(() -> new UsernameNotFoundException("Admin bulunamadı: " + username));
+    }
+    
+    public AdminProfileResponseDto getAdminProfile(String username) {
+    	// Kullanıcıyı al
+        User admin = userRepository.FindByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+        // Admin rolünü kontrol et
+        if (!Role.ADMIN.equals(admin.getRole())) {
+            throw new AccessDeniedException("Kullanıcı admin değil: " + username);
+        }
+        // DTO oluştur ve döndür
+        return new AdminProfileResponseDto(admin.getUsername());
+    }
+    @Transactional // Güncellemelerin atomik olmasını sağlar (ya hepsi yapılır ya hiçbiri yapılmaz)
+	public UserDto updateUser(Long userId,  UpdateUserByAdminDto updateUserByAdminDto) {
+    	 User user = userRepository.findById(userId)
+    	            .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + userId));
+    	 // Gelen DTO'dan alanları kontrol edip güncelle
+    	    if (updateUserByAdminDto.getUsername() != null) {
+    	        user.setUsername(updateUserByAdminDto.getUsername());
+    	    }
+    	    if (updateUserByAdminDto.getEmail() != null) {
+    	        user.setEmail(updateUserByAdminDto.getEmail());
+    	    }
+    	    if (updateUserByAdminDto.getPassword() != null) {
+    	        user.setPassword(passwordEncoder.encode(updateUserByAdminDto.getPassword())); // Şifreyi encode ediyoruz
+    	    }
+    	    if (updateUserByAdminDto.getRole() != null) {
+    	        try {
+    	            Role role = Role.valueOf(updateUserByAdminDto.getRole().toUpperCase());
+    	            user.setRole(role);
+    	        } catch (IllegalArgumentException e) {
+    	            throw new IllegalArgumentException("Geçersiz rol: " + updateUserByAdminDto.getRole());
+    	        }
+    	    }
+    	    userRepository.save(user);
+    	 // Güncellenmiş kullanıcı bilgilerini DTO'ya dönüştür ve döndür
+    	    return new UserDto(user.getId(), user.getUsername(), user.getEmail(), user.getRole());
+	}
+
+	public Long getUserIdByUsername(String username) {
+		User user = userRepository.FindByUsername(username)
+	            .orElseThrow(() -> new RuntimeException("User not found"));
+	    return user.getId();
+	}
+
+    
+    
+    
+}
+
