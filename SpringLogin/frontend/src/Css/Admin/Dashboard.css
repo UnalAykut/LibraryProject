@@ -1,0 +1,49 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .app {
+    display: flex;
+    height: 100vh;
+  }
+  
+  .main-content {
+    flex: 1;
+    background-color: #f4f4f9;
+    padding: 20px;
+  }
+  
+  /*Card*/
+  .dashboard-content {
+    padding: 20px;
+  }
+  
+  .stats-container {
+    display: flex;
+    justify-content: space-between; /* Kartlar arasında boşluk bırakır */
+    gap: 20px; /* Kartlar arasındaki boşluk */
+  }
+  
+  .stat-card {
+    flex: 1; /* Kartların eşit genişlikte olmasını sağlar */
+    max-width: 300px; /* Kartların maksimum genişliğini belirler */
+    background-color: white;
+    border: 2px solid;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .stat-card .value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  
+  .stat-card .description {
+    color: gray;
+  }
+  

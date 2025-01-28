@@ -1,0 +1,145 @@
+.log-list {
+    padding: 20px;
+    background-color: #f7f8fc; /* Arka plan rengi */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .log-list h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #3f3d56; /* Başlık rengi */
+    margin-bottom: 20px;
+  }
+  
+  .filters {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 5px;
+  }
+  
+  .search-input {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 48%; /* Eşit genişlikte inputlar */
+  }
+  
+  .log-list table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .log-list table th {
+    background-color: #4f46e5; /* Başlık satırının rengi */
+    color: white;
+    text-align: left;
+    padding: 10px;
+    font-size: 16px;
+  }
+  
+  .log-list table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #4a4a4a;
+    vertical-align: middle;
+  }
+  
+  .log-list table tr:hover {
+    background-color: #f1f5ff; /* Satır üzerine gelindiğinde değişen renk */
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+  }
+  
+  .pagination-button {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 0 5px;
+    background-color: #f9f9f9;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+  }
+  
+  .pagination-button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  .pagination-button.active {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  .pagination-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .log-list table th:first-child,
+  .log-list table td:first-child {
+    width: 5%; /* ID sütunu dar */
+    text-align: center;
+  }
+  
+  .log-list table th:last-child,
+  .log-list table td:last-child {
+    width: 20%; /* Tarih sütunu geniş */
+  }
+  
+  /* Responsive Tasarım */
+  @media (max-width: 768px) {
+    .filters {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .search-input {
+      width: 100%; /* Mobilde tam genişlik */
+    }
+  
+    .log-list table th, 
+    .log-list table td {
+      font-size: 12px; /* Daha küçük metin */
+    }
+  
+    .pagination-button {
+      padding: 6px 10px;
+      font-size: 12px;
+    }
+  } 
+
+  /* İkon ve Metin Hizalaması */
+.action-info,
+.entity-info {
+  display: flex;
+  align-items: center; /* İkon ve metni dikeyde ortalar */
+  gap: 8px; /* İkon ve metin arasındaki boşluk */
+}
+
+.action-info .action-name,
+.entity-info .entity-name {
+  font-size: 14px; /* Yazı boyutu */
+  line-height: 1; /* Satır yüksekliğini düşürerek hizalamayı sağlar */
+  color: #4a4a4a; /* Yazı rengi */
+}
+
+.action-info svg,
+.entity-info svg {
+  font-size: 18px; /* İkon boyutunu kontrol eder */
+  vertical-align: middle; /* İkonun yazıyla hizalanmasını sağlar */
+}
+
+  

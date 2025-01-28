@@ -1,0 +1,26 @@
+.dashboard-header {
+    display: flex;
+    justify-content: center; /* Sağ tarafa hizalama */
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .admin-info {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Kullanıcı simgesi ve ad arasındaki boşluk */
+  }
+  
+  .user-icon {
+    font-size: 2rem; /* Kullanıcı simgesi boyutu */
+    color: #6c63ff; /* Simge rengi */
+  }
+  
+  .admin-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333; /* Yazı rengi */
+  }
+  

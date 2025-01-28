@@ -1,0 +1,87 @@
+.sidebar {
+    width: 250px;
+    background-color: #4c4cff; /* Daha koyu bir ton */
+    color: white;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .sidebar h2 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .sidebar ul {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .sidebar li {
+    display: flex;
+    align-items: center;
+    margin: 15px 0;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .sidebar li:hover {
+    background-color: #6868ff; /* Hover rengi */
+    transform: translateX(10px); /* Hover'da hafif bir hareket */
+  }
+  
+  .sidebar li.active {
+    background-color: #3737ff; /* Aktif link rengi */
+  }
+  
+  .sidebar li svg {
+    margin-right: 10px;
+    font-size: 1.2rem;
+  }
+  
+  .sidebar li span {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .sidebar-footer {
+    margin-top: auto;
+    text-align: center;
+    font-size: 0.9rem;
+    opacity: 0.8;
+  }
+  
+  .sidebar-footer a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+  }
+  
+  .sidebar-footer a:hover {
+    color: #ffd700; /* Altın sarısı hover efekti */
+  }
+
+  .logout {
+    margin-top: auto; /* En alt kısma yerleştirmek için */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    color: white; /* Kırmızı renkte görünüm */
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .logout:hover {
+    background-color: #6868ff; /* Hover rengi */
+    transform: translateX(10px); /* Hover'da hafif bir hareket */
+  }
+  
+  

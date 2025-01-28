@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,700');
+
+:root {
+    --color-bg-gradient-start: #1a1a2e; /* Daha koyu bir arka plan rengi */
+    --color-bg-gradient-end: #16213e;
+    --color-screen-gradient-start: #0f3460; /* Ekran gradyanı koyu */
+    --color-screen-gradient-end: #1a1a3e;
+    --color-box-shadow: #000000; /* Daha koyu bir gölge */
+    --color-shape1: #2c2c54; /* Şekiller için koyu tonlar */
+    --color-shape2: #3a3a85;
+    --color-shape3-gradient-start: #2c2c54;
+    --color-shape3-gradient-end: #4b4b7b;
+    --color-shape4: #3e3e6d;
+    --color-login-icon: #a6b1e1; /* İkon için açık ton ama koyulaştırılmış */
+    --color-login-input-border: #3a3a5f; /* Input sınırları için koyu ton */
+    --color-login-input-border-hover: #4c4c7f;
+    --color-button-bg: #1a1a3c; /* Buton arka planı koyu */
+    --color-button-border: #3e3e6d;
+    --color-button-text: #ffffff; /* Yazılar için açık renk */
+    --color-button-shadow: #000000; /* Daha koyu gölge */
+    --color-button-icon: #a6b1e1; /* İkonlar için uygun bir renk */
+    --color-social-icon: #a6b1e1; /* Sosyal medya ikonları için uygun bir renk */
+    --color-social-icon-shadow: #000000;
+  }
+  
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Raleway, sans-serif;
+}
+
+body {
+  background: linear-gradient(90deg, var(--color-bg-gradient-start), var(--color-bg-gradient-end));
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.screen {
+  background: linear-gradient(90deg, var(--color-screen-gradient-start), var(--color-screen-gradient-end));
+  position: relative;
+  height: 600px;
+  width: 360px;
+  box-shadow: 0px 0px 24px var(--color-box-shadow);
+}
+
+.screen__content {
+  z-index: 1;
+  position: relative;
+  height: 100%;
+}
+
+.screen__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+  -webkit-clip-path: inset(0 0 0 0);
+  clip-path: inset(0 0 0 0);
+}
+
+.screen__background__shape {
+  transform: rotate(45deg);
+  position: absolute;
+}
+
+.screen__background__shape1 {
+  height: 520px;
+  width: 520px;
+  background: var(--color-shape1);
+  top: -50px;
+  right: 120px;
+  border-radius: 0 72px 0 0;
+}
+
+.screen__background__shape2 {
+  height: 220px;
+  width: 220px;
+  background: var(--color-shape2);
+  top: -172px;
+  right: 0;
+  border-radius: 32px;
+}
+
+.screen__background__shape3 {
+  height: 540px;
+  width: 190px;
+  background: linear-gradient(270deg, var(--color-shape3-gradient-start), var(--color-shape3-gradient-end));
+  top: -24px;
+  right: 0;
+  border-radius: 32px;
+}
+
+.screen__background__shape4 {
+  height: 400px;
+  width: 200px;
+  background: var(--color-shape4);
+  top: 420px;
+  right: 50px;
+  border-radius: 60px;
+}
+
+.admin-title {
+    font-size: 2rem;
+    color: var(--color-login-icon, #7875B5); /* İsteğe bağlı renk ayarı */
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+
+.login {
+  width: 320px;
+  padding: 30px;
+  padding-top: 156px;
+}
+
+.login__field {
+  padding: 20px 0px;
+  position: relative;
+}
+
+.login__icon {
+  position: absolute;
+  top: 30px;
+  color: var(--color-login-icon);
+}
+
+.login__input {
+  border: none;
+  border-bottom: 2px solid var(--color-login-input-border);
+  background: none;
+  padding: 10px;
+  padding-left: 24px;
+  font-weight: 700;
+  width: 75%;
+  transition: 0.2s;
+}
+
+.login__input:active,
+.login__input:focus,
+.login__input:hover {
+  outline: none;
+  border-bottom-color: var(--color-login-input-border-hover);
+}
+
+.login__submit {
+  background: var(--color-button-bg);
+  font-size: 14px;
+  margin-top: 30px;
+  padding: 16px 20px;
+  border-radius: 26px;
+  border: 1px solid var(--color-button-border);
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: var(--color-button-text);
+  box-shadow: 0px 2px 2px var(--color-button-shadow);
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.login__submit:active,
+.login__submit:focus,
+.login__submit:hover {
+  border-color: var(--color-login-input-border-hover);
+  outline: none;
+}
+
+.button__icon {
+  font-size: 24px;
+  margin-left: auto;
+  color: var(--color-button-icon);
+}
+
+.social-login {
+  position: absolute;
+  height: 140px;
+  width: 160px;
+  text-align: center;
+  bottom: 0px;
+  right: 0px;
+  color: var(--color-social-icon);
+}
+
+.social-icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.social-login__icon {
+  padding: 20px 10px;
+  color: var(--color-social-icon);
+  text-decoration: none;
+  text-shadow: 0px 0px 8px var(--color-social-icon-shadow);
+}
+
+.social-login__icon:hover {
+  transform: scale(1.5);
+}
