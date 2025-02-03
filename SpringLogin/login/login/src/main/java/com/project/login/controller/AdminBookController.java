@@ -38,7 +38,7 @@ public class AdminBookController {
 	public ResponseEntity<List<BookAdminDto>> getAllBookForAdmin(){
 		String adminName = SecurityContextHolder.getContext().getAuthentication().getName();
 	    logService.saveLog("GET", "Book", null, adminName); // GET işlemini logla
-		 return ResponseEntity.ok(bookService.getAllBooksForAdmin());
+		return ResponseEntity.ok(bookService.getAllBooksForAdmin());
 	}
 	
 	@GetMapping("/{id}")

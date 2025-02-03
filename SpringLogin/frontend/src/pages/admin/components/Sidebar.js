@@ -1,7 +1,7 @@
 
 import React, {useEffect} from "react";
 import { useNavigate } from "react-router-dom";
-import { Home, Group, Book, AdminPanelSettings,History,Logout   } from "@mui/icons-material";
+import { Home, Group, Book, AdminPanelSettings,History,Logout,LibraryBooks     } from "@mui/icons-material";
 import "../../../Css/Admin/Sidebar.css"
 const Sidebar = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Sidebar = () => {
           <Home /> Dashboard
         </li>
         <li onClick={() => navigate("/dashboard/reservations")}>
-        <History/>Rezervasyonlar
+        <LibraryBooks  />Rezervasyonlar
         </li>
         <li onClick={() => navigate("/dashboard/users")}>
           <Group /> Üyeler

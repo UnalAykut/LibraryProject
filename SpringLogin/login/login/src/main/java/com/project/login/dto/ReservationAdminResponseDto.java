@@ -12,4 +12,7 @@ public class ReservationAdminResponseDto {
     private String bookTitle; // Kitap adı
     private LocalDate reservationDate; // Rezervasyon tarihi
     private LocalDate dueDate; // İade tarihi
+    private int extensionCount; // Uzatma sayısı
+	private double penalty; //gecikme cezası
+    private int overdueDays=0; // Gecikme süresi (gün olarak)
 }

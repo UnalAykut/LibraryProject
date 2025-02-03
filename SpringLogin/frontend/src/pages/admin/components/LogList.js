@@ -11,6 +11,7 @@ import {
   Book,
   AdminPanelSettings,
   History,
+  Event
 } from "@mui/icons-material";
 const LogList = () => {
   const [logs, setLogs] = useState([]); // Tüm loglar
@@ -19,7 +20,7 @@ const LogList = () => {
   const [searchEntity, setSearchEntity] = useState(""); // Entity adına göre arama
   const [searchAdmin, setSearchAdmin] = useState(""); // Admin adına göre arama
   const [currentPage, setCurrentPage] = useState(1); // Mevcut sayfa
-  const [logsPerPage] = useState(10); // Sayfa başına log sayısı
+  const [logsPerPage] = useState(8); // Sayfa başına log sayısı
 
   // Backend'den logları al
   useEffect(() => {
@@ -104,6 +105,8 @@ const LogList = () => {
         return <Book style={{ color: "brown" }} />;
       case "Admin":
         return <AdminPanelSettings style={{ color: "teal" }} />;
+      case "Reservation":
+        return <Event style={{ color: "green" }} />;
       default:
         return <Info style={{ color: "black" }} />;
     }
@@ -167,41 +170,48 @@ const LogList = () => {
                   </div>
                </td>
                <td>{log.entityId || "-"}</td>
-               <td>{log.performedBy}</td>
+               <td>
+                  <div className="admin-info">
+                    {getEntityIcon("Admin")} {/* Admin İkonu */}
+                    <span>{log.performedBy}</span> {/* Admin İsmi */}
+                  </div>
+               </td>
                <td>{new Date(log.timestamp).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* Sayfalama */}
-      <div className="pagination">
-        <button
-          onClick={handlePreviousPage}
-          className="pagination-button"
-          disabled={currentPage === 1}
-        >
-          &laquo; Geri
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageClick(index + 1)}
-            className={`pagination-button ${
-              currentPage === index + 1 ? "active" : ""
-            }`}
-          >
-            {index + 1}
-          </button>
-        ))}
-        <button
-          onClick={handleNextPage}
-          className="pagination-button"
-          disabled={currentPage === totalPages}
-        >
-          İleri &raquo;
-        </button>
-      </div>
+        {/* Sayfalama */}
+<div className="pagination">
+  <button
+    onClick={handlePreviousPage}
+    className="pagination-button"
+    disabled={currentPage === 1}
+  >
+    &laquo; Geri
+  </button>
+  {Array.from({ length: Math.min(totalPages, 10) }, (_, index) => {
+    const pageIndex = currentPage <= 6 ? index + 1 : currentPage - 5 + index; // Dinamik gösterim
+    if (pageIndex > totalPages) return null; // Toplam sayfa sayısını aşmasın
+    return (
+      <button
+        key={pageIndex}
+        onClick={() => handlePageClick(pageIndex)}
+        className={`pagination-button ${currentPage === pageIndex ? "active" : ""}`}
+      >
+        {pageIndex}
+      </button>
+    );
+  })}
+  <button
+    onClick={handleNextPage}
+    className="pagination-button"
+    disabled={currentPage === totalPages}
+  >
+    İleri &raquo;
+  </button>
+</div>
     </div>
   );
 };

@@ -110,6 +110,9 @@ public class ReservationService {
             dto.setBookTitle(reservation.getBook().getTitle());
             dto.setReservationDate(reservation.getReservationDate());
             dto.setDueDate(reservation.getDueDate());
+            dto.setExtensionCount(reservation.getExtensionCount());
+            dto.setPenalty(reservation.getPenalty());
+            dto.setOverdueDays(reservation.getOverdueDays());
             return dto;
         }).collect(Collectors.toList());
     };

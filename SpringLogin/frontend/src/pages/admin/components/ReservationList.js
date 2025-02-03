@@ -12,7 +12,7 @@ import ReservationModal from "./modals/ReservationModal"; // Yeni rezervasyon ek
 const ReservationList = () => {
   const [reservations, setReservations] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [reservationsPerPage] = useState(5); // Sayfa başına gösterilecek rezervasyon sayısı
+  const [reservationsPerPage] = useState(10); // Sayfa başına gösterilecek rezervasyon sayısı
   const [showAddModal, setShowAddModal] = useState(false); // Yeni rezervasyon modalı
   const [loading, setLoading] = useState(false);
   const [reservationDetails, setReservationDetails] = useState({}); // Rezervasyon detayları
@@ -114,6 +114,9 @@ const fetchReservationDetails = async (reservations) => {
             <th>Kitap Adı</th>
             <th>Rezervasyon Tarihi</th>
             <th>İade Tarihi</th>
+           {/* <th>Uzatma</th>
+            <th>Ceza</th>
+            <th>Geciken Gün</th>*/}
           </tr>
         </thead>
         <tbody>
@@ -131,6 +134,9 @@ const fetchReservationDetails = async (reservations) => {
                 <td>{reservationDetails[reservation.reservationId]?.bookTitle || "Yükleniyor..."}</td>
                 <td>{reservation.reservationDate}</td>
                 <td>{reservation.dueDate}</td>
+               {/* <td>{reservation.extensionCount}</td>
+                <td>{reservation.penalty}</td>
+                <td>{reservation.dueDate}</td>*/}
               </tr>
             ))
           ) : (
@@ -142,31 +148,35 @@ const fetchReservationDetails = async (reservations) => {
       </table>
 
       {/* Sayfalama */}
-      <div className="pagination">
-        <button
-          onClick={handlePreviousPage}
-          className="pagination-button"
-          disabled={currentPage === 1}
-        >
-          &laquo; Geri
-        </button>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index + 1}
-            onClick={() => handlePageClick(index + 1)}
-            className={`pagination-button ${currentPage === index + 1 ? "active" : ""}`}
-          >
-            {index + 1}
-          </button>
-        ))}
-        <button
-          onClick={handleNextPage}
-          className="pagination-button"
-          disabled={currentPage === totalPages}
-        >
-          İleri &raquo;
-        </button>
-      </div>
+<div className="pagination">
+  <button
+    onClick={handlePreviousPage}
+    className="pagination-button"
+    disabled={currentPage === 1}
+  >
+    &laquo; Geri
+  </button>
+  {Array.from({ length: Math.min(totalPages, 10) }, (_, index) => {
+    const pageIndex = currentPage <= 6 ? index + 1 : currentPage - 5 + index; // Dinamik gösterim
+    if (pageIndex > totalPages) return null; // Toplam sayfa sayısını aşmasın
+    return (
+      <button
+        key={pageIndex}
+        onClick={() => handlePageClick(pageIndex)}
+        className={`pagination-button ${currentPage === pageIndex ? "active" : ""}`}
+      >
+        {pageIndex}
+      </button>
+    );
+  })}
+  <button
+    onClick={handleNextPage}
+    className="pagination-button"
+    disabled={currentPage === totalPages}
+  >
+    İleri &raquo;
+  </button>
+</div>
 
       {/* Yeni Rezervasyon Modalı */}
       <ReservationModal
