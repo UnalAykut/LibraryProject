@@ -1,0 +1,69 @@
+.account-container {
+    padding: 100px 20px;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  .account-title {
+    font-size: 2rem;
+    color: var(--coffee-dark);
+  }
+  
+  .success-message {
+    color: green;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  
+  .error-message {
+    color: red;
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+  
+  /* Form Stili */
+  .account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .account-form label {
+    font-size: 1rem;
+    font-weight: bold;
+    text-align: left;
+  }
+  
+  .account-form input {
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid var(--coffee-medium);
+    border-radius: 5px;
+  }
+  
+  .update-button {
+    background: var(--coffee-dark);
+    color: white;
+    font-size: 1rem;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .update-button:hover {
+    background: var(--coffee-medium);
+  }
+  
+  /* Mobil Uyum */
+  @media (max-width: 768px) {
+    .account-container {
+      padding: 80px 10px;
+    }
+  }
+  

@@ -21,6 +21,7 @@ const getAuthHeader = () => {
 export const login = async (username, password) => {
   try {
     const response = await axios.post(`${API_BASE_URL}/api/login`, { username, password });
+    console.log("Giriş API Yanıtı:", response.data); 
     return response.data; // Token veya diğer gerekli veriler
   } catch (error) {
     throw error.response.data; // Hata mesajını geri döndür
@@ -206,3 +207,80 @@ export const getBookById = async (bookId) => {
             throw new Error("Rezervasyonlar Oluşturulamadı.");
         }
         }
+
+
+        //Kullanıcılar çin tüm kitapları getirme
+        export const userGetAllBooks = async () => {
+          try {
+            const response = await axios.get(`${API_BASE_URL}/api/user/books`,getAuthHeader() );
+            return response.data;
+          } catch (error) {
+            console.error("Kitaplar alınamadı:", error);
+            throw error;
+          }
+        };
+        //Kullanıcılar için rezervasyonlarını  getirme
+        export const userGetAllMyReservations = async () => {
+          try {
+            const response = await axios.get(`${API_BASE_URL}/api/myReservations`,getAuthHeader() );
+            return response.data;
+          } catch (error) {
+            console.error("Rezervasyonlar alınamadı:", error);
+            throw error;
+          }
+        };
+
+        // Kullanıcı profilini güncelleme
+        export const updateUserProfile = async (profileData) => {
+          try {
+            const response = await axios.put(`${API_BASE_URL}/api/user/profile`, profileData, getAuthHeader());
+            return response.data;
+          } catch (error) {
+            console.error("Profil güncellenemedi:", error);
+            throw error;
+          }
+        };
+
+        //Kullanıcı profilini getirme
+        export const getUserProfile = async () => {
+          try {
+            const response = await axios.get(`${API_BASE_URL}/api/user/get/profile`, getAuthHeader());
+            return response.data;
+          } catch (error) {
+            console.error("Profil Getirilemedi:", error);
+            throw error;
+          }
+        };
+
+        // Kullanıcının kitap rezerve etmesi için güncellenmiş fonksiyon
+export const userReserveBook = async (bookId) => {
+  try {
+    const user = await getCurrentUser(); // Kullanıcı bilgilerini getir
+
+    if (!user) {
+      throw new Error("Kullanıcı oturumu bulunamadı. Lütfen giriş yapın.");
+    }
+
+    const response = await axios.post(`${API_BASE_URL}/api/reservations`, {
+      userId: user.id, // Kullanıcı ID'si backend'den alınıyor
+      bookId,
+      dueDate: new Date().toISOString().split("T")[0],
+    }, getAuthHeader());
+
+    return response.data;
+  } catch (error) {
+    console.error("Rezerve Edilemedi:", error);
+    throw error;
+  }
+};
+
+        // Giriş yapan kullanıcının bilgilerini getirir
+export const getCurrentUser = async () => {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/me`, getAuthHeader());
+    return response.data; // { id: 5, username: "ali", email: "ali@example.com" }
+  } catch (error) {
+    console.error("Kullanıcı bilgileri alınamadı!", error);
+    return null;
+  }
+};  

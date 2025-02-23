@@ -5,8 +5,11 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.project.login.dto.AuthResponse;
 import com.project.login.dto.LoginRequest;
 import com.project.login.dto.RegisterRequest;
+import com.project.login.dto.UserDto;
 import com.project.login.model.Role;
 import com.project.login.security.JwtTokenProvider;
 import com.project.login.service.UserService;
@@ -60,4 +64,17 @@ public class UserAuthController {
         }
 	
     }
-}
+    
+    
+    @GetMapping("/me")
+    @Operation(summary = "Kullanıcı Bilgileri", description = "Kullanıcı Bilgileri")
+    public ResponseEntity<UserDto> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails){
+    	if (userDetails == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        UserDto userDto = userService.getUserByUsername(userDetails.getUsername());
+        return ResponseEntity.ok(userDto);
+    }
+   }
+

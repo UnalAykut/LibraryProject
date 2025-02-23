@@ -29,7 +29,7 @@ public class Book {
 	@Column(nullable = false)
 	private String author; //kitap yazari
 	
-	@Column(nullable = false)
+	@Column(name="genre",nullable = false)
 	private String genre; //kitap türü
 	
 	@Column 

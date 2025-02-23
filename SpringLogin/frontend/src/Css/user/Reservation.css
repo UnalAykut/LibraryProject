@@ -1,0 +1,78 @@
+.reservations-container {
+  padding: 100px 20px 20px; /* Navbar'ı hesaba katarak padding ayarı */
+  max-width: 800px; /* Daha dar bir görünüm için */
+  margin: 0 auto;
+}
+
+.reservations-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--coffee-dark);
+}
+
+/* Hata mesajı */
+.error-message {
+  color: red;
+  text-align: center;
+}
+
+/* Rezervasyon Listesi (Tek Sütun) */
+.reservations-list {
+  display: flex;
+  flex-direction: column; /* Kartları alta alta sıralar */
+  gap: 20px; /* Kartlar arasında boşluk bırak */
+  align-items: center; /* Kartları merkezde hizala */
+}
+
+/* Rezervasyon Kartı */
+.reservation-card {
+  width: 100%; /* Kartları tam genişlikte yap */
+  max-width: 600px; /* Masaüstünde çok geniş olmaması için sınır koy */
+  background: var(--card-bg);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+  border: 2px solid var(--coffee-medium);
+  display: flex;
+  flex-direction: column;
+  text-align: left; /* İçeriği sola hizala */
+}
+
+/* Hover efekti */
+.reservation-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Gecikmiş Rezervasyonlar */
+.reservation-card.overdue {
+  border-color: red;
+  background: #ffe6e6;
+}
+
+/* Durum Etiketi */
+.status {
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.status.aktif {
+  color: green;
+}
+
+.status.gecikmiş {
+  color: red;
+}
+
+/* 📱 Mobil Uyumluluk */
+@media (max-width: 768px) {
+  .reservations-container {
+    padding: 80px 10px 20px;
+  }
+
+  .reservation-card {
+    max-width: 100%; /* Mobilde tam genişlik */
+  }
+}

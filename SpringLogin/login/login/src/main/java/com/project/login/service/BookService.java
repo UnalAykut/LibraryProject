@@ -23,7 +23,7 @@ public class BookService {
         		.map(book -> new BookUserDto(
         				book.getTitle(),
         				book.getAuthor(),
-        				book.getDescription(),
+        				book.getGenre(),
         				book.getImageUrl(),
         				book.getDescription()
         				)).collect(Collectors.toList());

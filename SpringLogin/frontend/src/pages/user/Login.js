@@ -24,7 +24,7 @@ function Login() {
     event.preventDefault();
     try{
       const data = await login(username,password);
-      localStorage.setItem("token",data.token); //Gelen tokeni kaydet
+      localStorage.setItem("authToken",data.token); //Gelen tokeni kaydet
       navigate("/home");
       alert("Login successful!");
     }catch(error){

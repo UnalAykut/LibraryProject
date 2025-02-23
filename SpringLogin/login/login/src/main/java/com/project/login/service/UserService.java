@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.login.dto.RegisterRequest;
 import com.project.login.dto.UpdateUserRequestDto;
 import com.project.login.dto.UserDto;
+import com.project.login.dto.UserProfileResponseDto;
 import com.project.login.model.Role;
 import com.project.login.model.User;
 import com.project.login.repository.UserRepository;
@@ -144,6 +145,20 @@ public class UserService {
 	public Long getUserIdByUsername(String username) {
 		User user = userRepository.FindByUsername(username).orElseThrow(()->new RuntimeException("User not found"));
 		return user.getId();
+	}
+
+	public UserProfileResponseDto getUserProfile(Long currentUserId) {
+		User user = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + currentUserId));
+		
+		return new UserProfileResponseDto(user.getUsername(),user.getPassword(),user.getEmail());
+	}
+
+	public UserDto getUserByUsername(String username) {
+		User user = userRepository.FindByUsername(username)
+				.orElseThrow(() -> new UsernameNotFoundException("Kullanıcı bulunamadı: " + username));
+		
+        return new UserDto(user.getId(), user.getUsername(), user.getEmail(),user.getRole());
 	}
 	
 

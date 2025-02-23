@@ -9,11 +9,27 @@ import BookList from "./pages/admin/components/BookList";
 import DashboardContent from "./pages/admin/components/DashboardContent"; 
 import LogList from "./pages/admin/components/LogList";
 import ReservationList from "./pages/admin/components/ReservationList";
+import Home from "./pages/user/components/Home";
+import Reservations from "./pages/user/components/Reservation";
+import Account from "./pages/user/components/Account";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />}/>
+        {/* Giriş sayfası */}
+        <Route path="/" element={<Login />} />
+        
+        {/* Kullanıcıların giriş yaptıktan sonra yönlendirileceği Home sayfası */}
+        <Route 
+          path="/home" 
+          element={
+            <PrivateRoute>
+              <Home />
+            </PrivateRoute>
+          } 
+        />
+        <Route path="reservation" element={<Reservations />} /> {/* Kullanıcı Listesi */}
+        <Route path="account" element={<Account />} />
         {/* Dashboard sayfası PrivateRoute ile korunuyor */}
         <Route
           path="/dashboard"
@@ -26,10 +42,12 @@ function App() {
           <Route index element={<DashboardContent />} /> {/* Ana Dashboard İçeriği */}
           <Route path="users" element={<UserList />} /> {/* Kullanıcı Listesi */}
           <Route path="books" element={<BookList />} /> {/* Kitap Listesi */}
-          <Route path="logs" element={<LogList/>} /> {/* Log Listesi */}
-          <Route path="reservations" element={<ReservationList/>} /> {/* Log Listesi */}
-          </Route>
-        <Route path="/admin" element={<AdminLogin/>}/>
+          <Route path="logs" element={<LogList />} /> {/* Log Listesi */}
+          <Route path="reservations" element={<ReservationList />} /> {/* Rezervasyon Listesi */}
+        </Route>
+
+        {/* Admin Giriş Sayfası */}
+        <Route path="/admin" element={<AdminLogin />} />
       </Routes>
     </Router>
   );

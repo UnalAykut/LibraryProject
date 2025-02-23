@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@100..900&display=swap");
+
+/* 🎨 Renk Değişkenleri */
+:root {
+  --coffee-light: #f3e9dc;
+  --coffee-medium: #c8a27c;
+  --coffee-dark: #5e3c2c;
+  --coffee-hover: #774936;
+  --text-color: #3e2f2f;
+  --card-bg: #fffaf0;
+}
+
+/* Genel Navbar */
+.mui-navbar {
+  background: var(--coffee-dark) !important;
+  color: white !important;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+  font-family: "Raleway", sans-serif;
+}
+
+/* Navbar İçeriği */
+.mui-navbar-toolbar {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+
+/* Sol Kısım: Kitaplık Logosu */
+.mui-navbar-logo {
+  flex: 1;
+}
+
+.mui-navbar-logo-link {
+  color: var(--coffee-light);
+  font-size: 24px;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+.mui-navbar-logo-link:hover {
+  color: var(--coffee-medium);
+}
+
+/* Orta Menü Öğeleri */
+.mui-navbar-links {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+/* 🟢 Aktif Link */
+.mui-navbar-link.active {
+  background: var(--coffee-hover);
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 10px 15px;
+  color: white;
+}
+
+.mui-navbar-link {
+  color: var(--coffee-light);
+  text-decoration: none;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: all 0.3s ease-in-out;
+}
+
+.mui-navbar-link:hover {
+  background: var(--coffee-hover);
+  color: white;
+}
+
+/* Sağ Kısım: Çıkış Yap */
+.mui-navbar-logout {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Çıkış Yap Butonu */
+.mui-navbar-logout .mui-navbar-link {
+  /*background: var(--coffee-medium);*/
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background 0.3s ease-in-out;
+}
+
+.mui-navbar-logout .mui-navbar-link:hover {
+  background: var(--coffee-hover);
+}
+
+/* Menü Butonu (Mobil İçin) */
+.mui-navbar-menu-button {
+  display: none !important;
+  color: var(--coffee-light);
+}
+
+/* Mobil Menü - Drawer */
+.mui-mobile-menu {
+  width: 250px;
+  background: var(--coffee-dark);
+  color: var(--coffee-light);
+  height: 100vh;
+  padding-top: 20px;
+}
+
+/* Menü Kapatma Butonu */
+.mui-close-icon {
+  color: var(--coffee-light) !important;
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 15px;
+  cursor: pointer;
+}
+
+/* Mobilde Menüyü Aç/Kapat */
+@media (max-width: 768px) {
+  .mui-navbar-links {
+    display: none;
+  }
+
+  .mui-navbar-logout {
+    display: none;
+  }
+
+  .mui-navbar-menu-button {
+    display: block !important;
+  }
+}
