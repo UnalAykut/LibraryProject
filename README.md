@@ -189,8 +189,9 @@ Bu proje, bir **Kütüphane Yönetim Sistemi** olup, kullanıcıların kitaplar�
   <img src="Preview/14.png"/>
   <h2>Adminin Kitapları Yönettiği Sayfa</h2> 
   <img src="Preview/15.png"/>
-  <h2>Adminin Kitap Eklemesi</h2>
+  <h2>Adminin Kitap Düzenlemesi</h2>
   <img src="Preview/16.png"/>
+  <h2>Adminin Kitap Eklemesi</h2>
   <img src="Preview/17.png"/>
   <h2>Adminin Kitap Silmesi İçin Onay Mesajı</h2>
   <img src="Preview/18.png"/>
