@@ -161,23 +161,45 @@ Bu proje, bir **Kütüphane Yönetim Sistemi** olup, kullanıcıların kitaplar�
 
 # Projenin Ekran Görüntüleri:
  <div>
-  <img src="Preview/01.png"/>
-  <img src="Preview/02.png"/>
+  <h2>Kullanıcı Giriş Sayfası</h2>
   <img src="Preview/1.png"/>
+  <h2>Kullanıcı Kayıt Ol Sayfası</h2>
   <img src="Preview/2.png"/>
+  <h2>Kullanıcı Girişi sonrası Anasayfa</h2>
   <img src="Preview/3.png"/>
   <img src="Preview/4.png"/>
+  <h2>Kullanıcı Rezervasyonlarım Sayfası</h2>
   <img src="Preview/5.png"/>
+  <h2>Kullanıcı Hesaplarını Düzenleyebildiği Sayfa</h2>
   <img src="Preview/6.png"/>
+  <h2>Admin Giriş Sayfası</h2>
   <img src="Preview/7.png"/>
+  <h2>Admin Girişi sonrası Dashboard</h2>
   <img src="Preview/8.png"/>
+  <h2>Adminin Rezervasyonları Yönettiği Sayfa</h2>
   <img src="Preview/9.png"/>
+  <h2>Adminin Rezervasyon Oluşturması</h2>
   <img src="Preview/10.png"/>
   <img src="Preview/11.png"/>
+  <h2>Adminin Kullanıcıları Yönettiği Sayfa</h2>
   <img src="Preview/12.png"/>
+  <h2>Adminin Kullanıcıyı Düzenleyebilmesi</h2>
   <img src="Preview/13.png"/>
+  <h2>Adminin Kullanıcıyı Silmesi İçin Onay Mesajı</h2>
   <img src="Preview/14.png"/>
+  <h2>Adminin Kitapları Yönettiği Sayfa</h2> 
   <img src="Preview/15.png"/>
+  <h2>Adminin Kitap Eklemesi</h2>
+  <img src="Preview/16.png"/>
+  <img src="Preview/17.png"/>
+  <h2>Adminin Kitap Silmesi İçin Onay Mesajı</h2>
+  <img src="Preview/18.png"/>
+  <h2>Adminin Log Kayıtlarını Listelemesi</h2>
+  <img src="Preview/19.png"/>
+  <h2>Post için Log Kayıtlarının Filtrelenmesi</h2>
+  <img src="Preview/20.png"/>
+  <h2>Delete için Log Kayıtlarının Filtrelenmesi</h2>
+  <img src="Preview/21.png"/>
 </div>
 
 
